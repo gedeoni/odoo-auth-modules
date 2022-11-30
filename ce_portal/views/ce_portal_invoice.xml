@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <record id="CePortal_invoice_tree_view" model="ir.ui.view">
+      <field name="name">CePortal.invoice.view.tree</field>
+      <field name="model">account.move</field>
+      <field name="arch" type="xml">
+        <tree create="false">
+          <field name="name" string="Client Name" />
+          <field name="partner_bank_id" string="Account Number" />
+          <field name="client_phone_number" string="Phone Number" />
+          <field name="ref" string="Invoice Number" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_ce_portal_invoice" model="ir.actions.act_window">
+      <field name="name">Invoices</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">account.move</field>
+      <field name="view_id" ref="ce_portal.CePortal_invoice_tree_view" />
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+                    No Invoice Information
+        </p>
+      </field>
+    </record>
+  </data>
+</odoo>

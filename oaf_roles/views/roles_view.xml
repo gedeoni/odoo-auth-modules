@@ -1,0 +1,85 @@
+<odoo>
+    <data>
+        <record id="oaf_roles_tree_view" model="ir.ui.view">
+            <field name="name">oaf.roles.tree</field>
+            <field name="model">oaf.roles</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="role_value"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="oaf_roles_form_view" model="ir.ui.view">
+            <field name="name">oaf.roles.form</field>
+            <field name="model">oaf.roles</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="role_value"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Groups">
+                                <field name="groups_id" nolabel="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_oaf_roles_mapping" model="ir.actions.act_window">
+            <field name="name">OAF Roles</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">oaf.roles</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_oaf_roles"
+            name="OAF Roles"
+            parent="base.menu_users"
+            sequence="300"
+            action="action_oaf_roles_mapping"
+            groups="base.group_no_one"/>
+        
+
+        <!-- Remove link tracker menu for country admin-->
+            <!-- <record model="ir.ui.menu" id="utm.menu_link_tracker_root">
+                <field name="groups_id" eval="[(6, 0,[ref('base.group_erp_manager')])]" />
+            </record> -->
+
+        <!-- Remove inventory menu for country admin-->
+            <!-- <record model="ir.ui.menu" id="stock.menu_stock_root">
+                <field name="groups_id" eval="[(6, 0,[ref('base.group_erp_manager')])]" />
+            </record> -->
+
+        <!-- Remove discuss menu for country admin-->
+            <!-- <record model="ir.ui.menu" id="mail.menu_root_discuss">
+                <field name="groups_id" eval="[(6, 0,[ref('base.group_erp_manager')])]" />
+            </record> -->
+
+        <!-- Remove invoicing menu for country admin-->
+            <!-- <record model="ir.ui.menu" id="account.menu_finance">
+                <field name="groups_id" eval="[(6, 0,[ref('base.group_erp_manager')])]" />
+            </record> -->
+
+        <!-- Remove "Sales" menu for country admin-->
+            <!-- <record model="ir.ui.menu" id="sale.sale_menu_root">
+                <field name="groups_id" eval="[(6, 0,[ref('base.group_erp_manager')])]" />
+            </record> -->
+            
+        <!-- Rename "Point of Sales" to "sales" for country admins-->
+            <!-- <record model="ir.ui.menu" id="point_of_sale.menu_point_root">
+                <field name="groups_id" eval="[(6, 0,[ref('oaf_roles.group_country_admin'), ref('base.group_erp_manager')])]" />
+            </record> -->
+
+    </data>
+    
+</odoo>

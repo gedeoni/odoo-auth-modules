@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="netlife_login" inherit_id="web.login" name="Login Inherit">
+        <xpath expr="//div[hasclass('field-login')]" position="attributes">
+          <attribute name="t-if">debug</attribute>
+        </xpath>
+
+        <xpath expr="//div[hasclass('field-password')]" position="attributes">
+          <attribute name="t-if">debug</attribute>
+        </xpath>
+
+        <xpath expr="//button[@type='submit']" position="attributes">
+          <attribute name="t-if">debug</attribute>
+        </xpath>
+    </template>
+    <template id="auth_signup.login" inherit_id="web.login" name="Sign up - Reset Password">
+        <xpath expr="//button[@type='submit']" position="after">
+            <div class="justify-content-between mt-2 d-flex small" t-if="debug">
+                <a t-if="signup_enabled"
+                   t-attf-href="/web/signup?{{ keep_query() }}">Don't have an account?</a>
+                <a t-if="reset_password_enabled" t-attf-href="/web/reset_password?{{ keep_query() }}">Reset Password</a>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="auth_oauth.providers" name="OAuth Providers">
+        <t t-if="len(providers) &gt; 0">
+           <div class="o_auth_oauth_providers list-group mt-1 mb-1 text-left">
+                <a t-foreach="providers" t-as="p" class="list-group-item list-group-item-action py-2" t-att-href="p['auth_link']">
+                    <i t-att-class="p['css_class']"/>
+                    <t t-esc="p['body']"/>
+                </a>
+            </div>
+        </t>
+    </template>
+</odoo>

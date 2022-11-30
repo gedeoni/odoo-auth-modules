@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <record id="CePortal_repayment_tree_view" model="ir.ui.view">
+      <field name="name">CePortal.repayment.view.tree</field>
+      <field name="model">account.payment</field>
+      <field name="arch" type="xml">
+        <tree create="false">
+          <field name="display_name" string="Client Name" />
+          <field name="group_code" string="Group Code" />
+          <field name="total_credit" string="Total Credit" />
+          <field name="total_amount_repaid" string="Amount Repaid" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_ce_portal_repayment" model="ir.actions.act_window">
+      <field name="name">Repayments</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">account.payment</field>
+      <field name="view_id" ref="ce_portal.CePortal_repayment_tree_view" />
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+                    No Repayment Information
+        </p>
+      </field>
+    </record>
+  </data>
+</odoo>

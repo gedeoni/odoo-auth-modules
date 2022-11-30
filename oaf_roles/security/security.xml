@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="group_country_admin" model="res.groups">
+        <field name="name">Country Admin</field>
+    </record>
+    <record id="oaf_roles.group_country_admin" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('point_of_sale.group_pos_user'))]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <record id="CePortal_Dashboard_tree_view" model="ir.ui.view">
+      <field name="name">CePortal.dashboard.view.tree</field>
+      <field name="model">res.partner</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" string="Client Name" />
+          <field name="oaf_location" string="Location"/>
+          <field name="bank_ids" string="Account Number" />
+          <field name="mobile" string="Phone Number" />
+          <field name="client_status" string="Client Status" widget="badge" decoration-success="client_status == 'Active'" decoration-info="client_status == 'Inactive'"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="account.res_partner_view_search" model="ir.ui.view">
+      <field name="name">res.partner.search.inherit</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_res_partner_filter"/>
+      <field name="arch" type="xml">
+        <xpath expr="//filter[@name='inactive']" position="replace">
+          <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+          <separator/>
+          <filter string="Clients" name="Clients" domain="[('contact_type', '=', 'contact')]"/>
+          <filter string="Beneficiaries" name="Beneficiaries" domain="[('contact_type', '=', 'Beneficiary')]"/>
+          <filter string="Dependents" name="Dependents" domain="[('contact_type', '=', 'Dependent')]"/>
+          <filter string="Co-insured" name="Co-insured" domain="[('contact_type', '=', 'Co_insured')]"/>
+          <separator/>
+        </xpath>
+      </field>
+    </record>
+
+    <record id="action_ce_portal_client_management" model="ir.actions.act_window">
+      <field name="name">Clients</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_id" ref="ce_portal.CePortal_Dashboard_tree_view" />
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+                    No Client Information
+        </p>
+      </field>
+    </record>
+
+    <record id="create_partner_form_view" model="ir.ui.view">
+      <field name="name">res.partner.form</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+
+        <xpath expr="//form" position="replace">
+          <form string="Partners">
+            <div class="alert alert-warning oe_edit_only" role="alert" attrs="{'invisible': True}">
+                  A partner with the same <span>
+              <span class="o_vat_label">Tax ID</span>
+            </span> already exists (<field name="same_vat_partner_id"/>
+), are you sure to create a new one?
+          </div>
+          <sheet>
+            <div class="oe_button_box" name="button_box"/>
+            <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+            <field name="image_1920" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_128&quot;}"/>
+            <div class="oe_title" attrs="{'invisible': True}">
+              <field name="is_company" invisible="1"/>
+              <field name="commercial_partner_id" invisible="1"/>
+              <field name="active" invisible="1"/>
+              <field name="contact_type" invisible="1"/>
+              <field name="company_type" widget="radio" class="oe_edit_only" options="{'horizontal': true}" />
+              <div class="o_row">
+                <field name="parent_id" widget="res_partner_many2one" placeholder="Company" domain="[('is_company', '=', True)]" context="{'default_is_company': True, 'show_vat': True}" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                <field name="company_name" attrs="{'invisible': ['|', '|', ('company_name', '=', False), ('company_name', '=', ''), ('is_company', '=', True)]}"/>
+                <button name="create_company" icon="fa-plus-square" string="Create company" type="object" class="oe_edit_only btn-link" attrs="{'invisible': ['|', '|', ('is_company','=', True), ('company_name', '=', ''), ('company_name', '=', False)]}"/>
+              </div>
+            </div>
+            <notebook colspan="4">
+              <page string="Basic Information" name="basic_information" autofocus="autofocus">
+                <group col="12">
+                  <group colspan="6">
+                    <field name="first_name"/>
+                    <field name="national_id"/>
+                    <field name="phone" widget="phone"/>
+                    <field name="date_of_birth"/>
+                  </group>
+                  <group colspan="6">
+                    <field name="last_name"/>
+                    <field name="mobile" string="Primary Phone Number" widget="phone"/>
+                    <field name="gender"/>
+                  </group>
+                </group>
+
+
+              </page>
+              <page string="Location and OAF Contact" name="location_and_oaf_contact">
+                <group col="12">
+
+                  <group colspan="6">
+                    <field name="oaf_location"/>
+                    <field name="government_location"/>
+                  </group>
+
+                  <group colspan="6">
+                    <field name="rural_retail_outlet"/>
+                  </group>
+                </group>
+              </page>
+              <page string="Dependents" name="dependents">
+                <field name="child_ids" mode="kanban" context="{'default_parent_id': active_id, 'default_user_id': user_id, 'default_contact_type': 'Dependent'}">
+                  <kanban>
+                    <field name="id"/>
+                    <field name="color"/>
+                    <field name="name"/>
+                    <field name="full_name"/>
+                    <field name="last_name"/>
+                    <field name="title"/>
+                    <field name="type"/>
+                    <field name="contact_type"/>
+                    <field name="email"/>
+                    <field name="parent_id"/>
+                    <field name="is_company"/>
+                    <field name="function"/>
+                    <field name="phone"/>
+                    <field name="street"/>
+                    <field name="street2"/>
+                    <field name="zip"/>
+                    <field name="city"/>
+                    <field name="country_id"/>
+                    <field name="mobile"/>
+                    <field name="state_id"/>
+                    <field name="image_128"/>
+                    <field name="lang"/>
+                    <!-- fields in form x2many view to diminish requests -->
+                    <field name="comment"/>
+                    <field name="display_name"/>
+                    <templates>
+                      <t t-name="kanban-box">
+                        <div t-if="record.contact_type.raw_value === 'Dependent'">
+                          <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
+                          <div t-att-class="color + (record.title.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'">
+                            <div class="o_kanban_image">
+                              <img alt="Contact image" t-if="record.image_128.raw_value" t-att-src="kanban_image('res.partner', 'image_128', record.id.raw_value)"/>
+                              <t t-if="!record.image_128.raw_value">
+                                <t t-if="record.type.raw_value !== 'invoice' &amp;&amp; record.type.raw_value !== 'delivery'">
+                                  <img alt="Logo" t-if="record.is_company.raw_value === true" t-att-src='_s + "/base/static/img/company_image.png"'/>
+                                  <img alt="Avatar" t-if="record.is_company.raw_value === false" t-att-src='_s + "/base/static/img/avatar_grey.png"'/>
+                                </t>
+                              </t>
+                            </div>
+                            <div class="oe_kanban_details">
+                              <div t-if="record.name.raw_value">
+                                <t t-esc="record.name.value"/>
+                              </div>
+                              <div t-if="record.function.raw_value">Relationship: <t t-esc="record.function.value"/>
+                              </div>
+                              <div t-if="record.mobile.raw_value">Mobile: <t t-esc="record.mobile.value"/>
+                              </div>
+                              <div t-if="record.contact_type.raw_value">Contact Type: <t t-esc="record.contact_type.value"/>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </t>
+                    </templates>
+                  </kanban>
+                  <form string="Dependents">
+                    <sheet>
+                      <field name="contact_type" required="1" widget="radio" class="contact_types" options="{'horizontal': true}" invisible="1"/>
+                      <field name="parent_id" invisible="1"/>
+                      <group col="12">
+                        <group colspan="5">
+                          <field name="first_name" string="First Name" attrs="{'required' : True}"/>
+                          <field name="last_name" string="Last Name" attrs="{'required' : True}"/>
+                          <field name="title" placeholder="e.g. Mr." attrs="{'invisible': True}"/>
+                          <field name="gender" string="Gender" attrs="{'required' : True}"/>
+                          <field name="function" string="Relationship" placeholder="e.g. Brother" attrs="{'required': True}"/>
+                          <field name="comment" placeholder="Internal notes..."/>
+                        </group>
+                        <group colspan="5">
+                          <field name="national_id" attrs="{'required' : True}"/>
+                          <field name="mobile" string="Primary Phone Number" widget="phone" attrs="{'required' : True}"/>
+                          <field name="date_of_birth" attrs="{'required' : True}"/>
+
+                        </group>
+                        <group colspan="1">
+                          <field name="image_1920" widget="image" class="oe_avatar" nolabel="1" options="{'image_preview': 'image_128'}"/>
+                        </group>
+                      </group>
+                      <field name="lang" invisible="True"/>
+                      <field name="user_id" invisible="True"/>
+                      <field name="image_128" invisible="1"/>
+                    </sheet>
+                  </form>
+                </field>
+              </page>
+              <page string="Beneficiaries" name="beneficiaries">
+                <field name="beneficiaries" mode="kanban" context="{'default_parent_id': active_id, 'default_user_id': user_id, 'default_contact_type': 'Beneficiary'}">
+                  <kanban>
+                    <field name="id"/>
+                    <field name="color"/>
+                    <field name="name"/>
+                    <field name="full_name"/>
+                    <field name="last_name"/>
+                    <field name="title"/>
+                    <field name="type"/>
+                    <field name="contact_type"/>
+                    <field name="email"/>
+                    <field name="parent_id"/>
+                    <field name="is_company"/>
+                    <field name="function"/>
+                    <field name="phone"/>
+                    <field name="street"/>
+                    <field name="street2"/>
+                    <field name="zip"/>
+                    <field name="city"/>
+                    <field name="country_id"/>
+                    <field name="mobile"/>
+                    <field name="state_id"/>
+                    <field name="image_128"/>
+                    <field name="lang"/>
+                    <!-- fields in form x2many view to diminish requests -->
+                    <field name="comment"/>
+                    <field name="display_name"/>
+                    <templates>
+                      <t t-name="kanban-box">
+                        <div t-if="record.contact_type.raw_value === 'Beneficiary'">
+                          <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
+                          <div t-att-class="color + (record.title.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'">
+                            <div class="o_kanban_image">
+                              <img alt="Contact image" t-if="record.image_128.raw_value" t-att-src="kanban_image('res.partner', 'image_128', record.id.raw_value)"/>
+                              <t t-if="!record.image_128.raw_value">
+                                <t t-if="record.type.raw_value !== 'invoice' &amp;&amp; record.type.raw_value !== 'delivery'">
+                                  <img alt="Logo" t-if="record.is_company.raw_value === true" t-att-src='_s + "/base/static/img/company_image.png"'/>
+                                  <img alt="Avatar" t-if="record.is_company.raw_value === false" t-att-src='_s + "/base/static/img/avatar_grey.png"'/>
+                                </t>
+                              </t>
+                            </div>
+                            <div class="oe_kanban_details">
+                              <div t-if="record.name.raw_value">
+                                <t t-esc="record.name.value"/>
+                              </div>
+                              <div t-if="record.function.raw_value">Relationship: <t t-esc="record.function.value"/>
+                              </div>
+                              <div t-if="record.mobile.raw_value">Mobile: <t t-esc="record.mobile.value"/>
+                              </div>
+                              <div t-if="record.contact_type.raw_value">Contact Type: <t t-esc="record.contact_type.value"/>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </t>
+                    </templates>
+                  </kanban>
+                  <form string="Beneficiaries">
+                    <sheet>
+                      <field name="contact_type" required="1" widget="radio" class="contact_types" options="{'horizontal': true}" invisible="1"/>
+                      <field name="parent_id" invisible="1"/>
+                      <group col="12">
+                        <group colspan="5">
+                          <field name="first_name" string="First Name" attrs="{'required' : True}"/>
+                          <field name="last_name" string="Last Name" attrs="{'required' : True}"/>
+                          <field name="title" placeholder="e.g. Mr." attrs="{'invisible': True}"/>
+                          <field name="gender" string="Gender" attrs="{'required' : True}"/>
+                          <field name="function" string="Relationship" placeholder="e.g. Brother" attrs="{'required': True}"/>
+                          <field name="comment" placeholder="Internal notes..."/>
+                        </group>
+                        <group colspan="5">
+                          <field name="national_id" attrs="{'required' : True}"/>
+                          <field name="mobile" string="Primary Phone Number" widget="phone" attrs="{'required' : True}"/>
+                          <field name="date_of_birth" attrs="{'required' : True}"/>
+
+                        </group>
+                        <group colspan="1">
+                          <field name="image_1920" widget="image" class="oe_avatar" nolabel="1" options="{'image_preview': 'image_128'}"/>
+                        </group>
+                      </group>
+                      <field name="lang" invisible="True"/>
+                      <field name="user_id" invisible="True"/>
+                      <field name="image_128" invisible="1"/>
+                    </sheet>
+                  </form>
+                </field>
+              </page>
+              <page string="Co-insured" name="co_insured">
+                <field name="co_insured" mode="kanban" context="{'default_parent_id': active_id, 'default_user_id': user_id, 'default_contact_type': 'Co_insured'}">
+                  <kanban>
+                    <field name="id"/>
+                    <field name="color"/>
+                    <field name="name"/>
+                    <field name="full_name"/>
+                    <field name="last_name"/>
+                    <field name="title"/>
+                    <field name="type"/>
+                    <field name="contact_type"/>
+                    <field name="national_id"/>
+                    <field name="email"/>
+                    <field name="parent_id"/>
+                    <field name="is_company"/>
+                    <field name="function"/>
+                    <field name="phone"/>
+                    <field name="street"/>
+                    <field name="street2"/>
+                    <field name="zip"/>
+                    <field name="city"/>
+                    <field name="country_id"/>
+                    <field name="mobile"/>
+                    <field name="state_id"/>
+                    <field name="image_128"/>
+                    <field name="lang"/>
+                    <!-- fields in form x2many view to diminish requests -->
+                    <field name="comment"/>
+                    <field name="display_name"/>
+                    <templates>
+                      <t t-name="kanban-box">
+                        <div t-if="record.contact_type.raw_value === 'Co_insured'">
+                          <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
+                          <div t-att-class="color + (record.title.raw_value == 1 ? ' oe_kanban_color_alert' : '') + ' oe_kanban_global_click'">
+                            <div class="o_kanban_image">
+                              <img alt="Contact image" t-if="record.image_128.raw_value" t-att-src="kanban_image('res.partner', 'image_128', record.id.raw_value)"/>
+                              <t t-if="!record.image_128.raw_value">
+                                <t t-if="record.type.raw_value !== 'invoice' &amp;&amp; record.type.raw_value !== 'delivery'">
+                                  <img alt="Logo" t-if="record.is_company.raw_value === true" t-att-src='_s + "/base/static/img/company_image.png"'/>
+                                  <img alt="Avatar" t-if="record.is_company.raw_value === false" t-att-src='_s + "/base/static/img/avatar_grey.png"'/>
+                                </t>
+                              </t>
+                            </div>
+                            <div class="oe_kanban_details">
+                              <div t-if="record.name.raw_value">
+                                <t t-esc="record.name.value"/>
+                              </div>
+                              <div t-if="record.function.raw_value">Relationship: <t t-esc="record.function.value"/>
+                              </div>
+                              <div t-if="record.mobile.raw_value">Mobile: <t t-esc="record.mobile.value"/>
+                              </div>
+                              <div t-if="record.national_id.raw_value">Natinal Id: <t t-esc="record.national_id.value"/>
+                              </div>
+                              <div t-if="record.contact_type.raw_value">Contact Type: <t t-esc="record.contact_type.value"/>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </t>
+                    </templates>
+                  </kanban>
+                  <form string="co_insured">
+                    <sheet>
+                      <hr/>
+                      <group col="12">
+                        <group colspan="5">
+                          <field name="first_name" string="First Name" attrs="{'required' : True}"/>
+                          <field name="last_name" string="Last Name" attrs="{'required' : True}"/>
+                          <field name="mobile" string="Primary Phone Number" widget="phone" attrs="{'required' : True}"/>
+                          <field name="gender" string="Gender" attrs="{'required' : True}"/>
+                        </group>
+                        <group colspan="5">
+                          <field name="national_id" attrs="{'required' : True}"/>
+                          <field name="function" string="Relationship" placeholder="e.g. Brother" attrs="{'required': True}"/>
+                          <field name="date_of_birth" attrs="{'required' : True}"/>
+
+                        </group>
+                        <group colspan="1">
+                          <field name="image_1920" widget="image" class="oe_avatar" nolabel="1" options="{'image_preview': 'image_128'}"/>
+                        </group>
+                      </group>
+                      <field name="lang" invisible="True"/>
+                      <field name="user_id" invisible="True"/>
+                      <field name="image_128" invisible="1"/>
+                    </sheet>
+                  </form>
+                </field>
+              </page>
+              <page name="sales_purchases" string="Sales &amp; Purchase" attrs="{'invisible': True}">
+                <group name="container_row_2">
+                  <group string="Sales" name="sale" priority="1">
+                    <field name="user_id" domain="[('share', '=', False)]"/>
+                  </group>
+                  <group string="Purchase" name="purchase" priority="2">
+                  </group>
+                  <group name="misc" string="Misc">
+                    <field name="ref" string="Reference"/>
+                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" attrs="{'readonly': [('parent_id', '!=', False)]}" force_save="1"/>
+                    <field name="industry_id" attrs="{'invisible': [('is_company', '=', False)]}" options="{'no_create': True}"/>
+                  </group>
+                </group>
+              </page>
+              <page name="internal_notes" string="Other Information">
+                <field name="comment" placeholder="Internal note..."/>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </xpath>
+
+    </field>
+  </record>
+
+
+  <!-- Create CE Portal menu item on the parent menu -->
+  <menuitem id="ce_portal_menu" name="CE Portal" groups="base.group_user" sequence="1" />
+
+  <!-- Create CE Portal sub-menus -->
+
+  <!-- Client Management -->
+  <menuitem id="ce_portal_client_management" name="Client Management" parent="ce_portal_menu" sequence="10" groups="base.group_user" action="action_ce_portal_client_management"/>
+
+  <!-- Orders -->
+  <menuitem id="ce_portal_orders" name="Orders" parent="ce_portal_menu" sequence="20" groups="base.group_user" action="action_ce_portal_orders"/>
+
+  <!-- Repayment -->
+  <menuitem id="ce_portal_repayment" name="Repayments" parent="ce_portal_menu" sequence="30" groups="base.group_user" action="action_ce_portal_repayment"/>
+  <!-- Repayment sub menus -->
+  <menuitem id="ce_portal_group_repayment" name="Group Repayments" parent="ce_portal_repayment" sequence="30" groups="base.group_user" action="action_ce_portal_repayment"/>
+  <menuitem id="ce_portal_client_repayment" name="Client Repayments" parent="ce_portal_repayment" sequence="30" groups="base.group_user" action="action_ce_portal_repayment"/>
+
+  <!-- Invoice -->
+  <menuitem id="ce_portal_invoice" name="Invoices" parent="ce_portal_menu" sequence="40" groups="base.group_user" action="action_ce_portal_invoice"/>
+
+</data>
+</odoo>

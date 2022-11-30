@@ -1,0 +1,28 @@
+<odoo>
+    <data>
+        <record forcecreate="True" id="oaf_keycloak_settings" model="ir.cron">
+            <field name="name">OAF Keycloak Settings</field>
+            <field name="model_id" ref="model_auth_oauth_provider"/>
+            <field name="state">code</field>
+            <field name="code">model._set_keycloak_values()</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall" />
+        </record>
+
+        <record id="oaf_keycloak_user_sync" model="ir.cron">
+            <field name="name">Keycloak User Sync</field>
+            <field name="model_id" ref="model_auth_oauth_provider"/>
+            <field name="state">code</field>
+            <field name="code">model._auto_sync_keycloak_user()</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field eval="False" name="doall" />
+            <field eval="False" name="active" />
+        </record>
+    </data>
+</odoo>
