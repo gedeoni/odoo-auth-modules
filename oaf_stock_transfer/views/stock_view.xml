@@ -1,0 +1,121 @@
+<odoo>
+    <data>
+        <record id="oaf_stock_transfer_vpicktree" model="ir.ui.view">
+            <field name="name">oaf_stock_transfer.stock.picking.tree.view</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="location_dest_id" position="attributes">
+                    <attribute name="string">To</attribute>
+                </field>
+                <field name="location_id" position="attributes">
+                    <attribute name="string">Source Warehouse</attribute>
+                </field>
+                <field name="scheduled_date" position="before">
+                    <field name="date"/>
+                </field>
+            </field>
+        </record>
+		<record id="oaf_stock_transfer_stock_picking_shop_view_form_inherit" model="ir.ui.view">
+            <field name="name">oaf_stock_transfer.stock.picking.form.view</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="multi_shops.stock_picking_shop_view_form_inherit"/>
+            <field name="arch" type="xml">
+            	<field name="shop_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                 <field name="picking_type_id" position="after">
+                	<field name="shop_id" groups="multi_shops.group_multi_shop" options="{'no_create': True}" required="1" context="{'company_id': company_id}"/>
+                </field>
+            </field>
+        </record>
+        <record id="oaf_stock_transfer_form_view" model="ir.ui.view">
+            <field name="name">stock.picking.form.view</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="origin" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <xpath expr="//div[hasclass('o_td_label')]" position="replace">
+                    <div class="o_td_label">
+                        <label for="partner_id" string="Delivery Address" style="font-weight:bold;"
+                               attrs="{'invisible': [('picking_type_code', '!=', 'outgoing')]}"/>
+                        <label for="partner_id" string="Receive From" style="font-weight:bold;"
+                               attrs="{'invisible': [('picking_type_code', '!=', 'incoming')]}"/>
+                        <label for="partner_id" string="Shop Agent" style="font-weight:bold;"
+                               attrs="{'invisible': [('picking_type_code', 'in', ['incoming', 'outgoing'])]}"/>
+                    </div>
+                </xpath>
+                <xpath expr="//page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="string">Order Qty</attribute>
+                </xpath>
+                <xpath expr="//page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='quantity_done']" position="after">
+                    <field name="state" string="Status" widget="badge" decoration-success="state == 'done'" decoration-info="state not in ('done', 'cancel')"/>
+                </xpath>
+                <xpath expr="//header" position="replace">
+                    <header>
+                        <button name="action_confirm" attrs="{'invisible': [('show_mark_as_todo', '=', False)]}" string="Approve" type="object" class="oe_highlight" groups="oaf_stock_transfer.group_stock_transfer_approver"/>
+                        <!-- <button name="action_assign" attrs="{'invisible': [('show_check_availability', '=', False)]}" string="Logistics Approve All" type="object" class="oe_highlight" groups="oaf_stock_transfer.group_stock_transfer_user"/> -->
+                        <button name="button_validate" attrs="{'invisible': ['|', ('state', 'in', ('waiting','confirmed')), ('show_validate', '=', False)]}" string="Validate" type="object" class="oe_highlight" groups="oaf_stock_transfer.group_stock_transfer_receiver"/>
+                        <widget name="signature" string="Sign" highlight="1"
+                                attrs="{'invisible': ['|', '|', ('id', '=', False), ('picking_type_code', '!=', 'outgoing'), ('state', '!=', 'done')]}"
+                                full_name="partner_id" groups="stock.group_stock_sign_delivery"/>
+                        <widget name="signature" string="Sign"
+                                attrs="{'invisible': ['|', '|', ('id', '=', False), ('picking_type_code', '!=', 'outgoing'), ('state', '=', 'done')]}"
+                                full_name="partner_id" groups="stock.group_stock_sign_delivery"/>
+                        <button name="do_print_picking" string="Print" groups="stock.group_stock_user" type="object" attrs="{'invisible': [('state', 'not in', ('assigned', 'partially_available'))]}"/>
+                        <button name="%(stock.action_report_delivery)d" string="Print" attrs="{'invisible': [('state', '!=', 'done')]}" type="action" groups="base.group_user"/>
+                        <button name="%(stock.act_stock_return_picking)d" string="Return" attrs="{'invisible': [('state', '!=', 'done')]}" type="action" groups="base.group_user"/>
+                        <button name="do_unreserve" string="Unreserve" type="object" attrs="{'invisible': ['|', '|', '|', ('picking_type_code', '=', 'incoming'), ('immediate_transfer', '=', True), '&amp;', ('state', 'not in', ('assigned', 'partially_available')), ('move_type', '!=', 'one'), '&amp;', ('state', 'not in', ('assigned', 'partially_available', 'confirmed')), ('move_type', '=', 'one')]}" groups="oaf_stock_transfer.group_stock_transfer_receiver"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done" />
+                        <!-- <button name="action_cancel" attrs="{'invisible': [('state', '!=', 'confirmed')]}" string="Logistics Reject All" groups="oaf_stock_transfer.group_stock_transfer_user" type="object" class="btn btn-danger"/> -->
+                        <button name="action_cancel" attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('show_mark_as_todo', '=', False)]}" string="Reject" groups="oaf_stock_transfer.group_stock_transfer_approver" type="object" class="btn btn-danger"/>
+                    </header>
+                </xpath>
+				<field name="picking_type_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="origin" position="after">
+                    <field name="picking_type_id" domain="[('code', '=', 'internal'), ('warehouse_id.shop_id', '=', shop_id)]" attrs="{'invisible': [('hide_picking_type', '=', True)], 'readonly': [('state', '!=', 'draft')]}"/>
+                </field>
+                <field name="location_id" position="replace">
+                    <field name="location_id"
+                    	options="{'no_create': True}"
+                    	groups="stock.group_stock_multi_locations"
+                    	attrs="{'invisible': [('picking_type_code', '=', 'incoming')]}"
+                    	context="{'oaf_stock_transfer': True}"/>
+                </field>
+				<field name="location_dest_id" position="attributes">
+                    <attribute name="domain">[('usage', '=', 'internal'), ('shop_id', '=', shop_id)]</attribute>
+                </field>
+                <xpath expr="//page[@name='operations']/field[@name='move_ids_without_package']/tree/button[last()]" position="after">
+                    <button name="action_confirm" type="object" string="Approve" class="btn btn-primary" states="draft" groups="oaf_stock_transfer.group_stock_transfer_approver"/>
+                    <button name="action_cancel" states="draft" string="Reject" groups="oaf_stock_transfer.group_stock_transfer_approver,oaf_stock_transfer.group_stock_transfer_creator,oaf_stock_transfer.group_stock_transfer_receiver" type="object" class="btn btn-danger"/>
+                    <button name="action_assign" type="object" string="Approve" class="btn btn-primary" states="waiting,confirmed" groups="oaf_stock_transfer.group_stock_transfer_receiver"/>
+                    <button name="action_cancel" states="waiting,confirmed" string="Reject" groups="oaf_stock_transfer.group_stock_transfer_approver,oaf_stock_transfer.group_stock_transfer_creator,oaf_stock_transfer.group_stock_transfer_receiver" type="object" class="btn btn-danger"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="action_oaf_stock_transfer" model="ir.actions.act_window">
+            <field name="name">Stock Transfer</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('picking_type_id.code','=','internal')]</field>
+            <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0]}</field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No transfer found. Let's create one!
+                </p><p>
+                    Transfers allow you to move products from one location to another.
+                </p>
+            </field>
+        </record>
+        <menuitem name="Stock Transfer" action="oaf_stock_transfer.action_oaf_stock_transfer" id="action_oaf_stock_transfer_menu"  parent="point_of_sale.pos_config_menu_catalog" sequence="31"  groups="stock.group_stock_user"/>
+    </data>
+</odoo>

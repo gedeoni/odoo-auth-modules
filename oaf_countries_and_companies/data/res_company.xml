@@ -1,0 +1,60 @@
+<odoo>
+    <data noupdate="1">
+        <!-- The default company created during odoo installation will be edited to Nigeria -->
+        <record id="company_loc_tanzania" model="res.company">
+            <field name="name">Tanzania</field>
+            <field name="country_id" ref="base.tz"/>
+            <field name="currency_id" ref="base.TZS"/>
+            <field name="keycloak_loc_identifier">loc_tanzania</field>
+        </record>
+
+        <record id="company_loc_rwanda" model="res.company">
+            <field name="name">Rwanda</field>
+            <field name="country_id" ref="base.rw"/>
+            <field name="currency_id" ref="base.RWF"/>
+            <field name="keycloak_loc_identifier">loc_rwanda</field>
+        </record>
+
+        <record id="company_loc_kenya" model="res.company">
+            <field name="name">Kenya</field>
+            <field name="country_id" ref="base.ke"/>
+            <field name="currency_id" ref="base.KES"/>
+            <field name="keycloak_loc_identifier">loc_kenya</field>
+        </record>
+
+        <record id="company_loc_uganda" model="res.company">
+            <field name="name">Uganda</field>
+            <field name="country_id" ref="base.ug"/>
+            <field name="currency_id" ref="base.UGX"/>
+            <field name="keycloak_loc_identifier">loc_uganda</field>
+        </record>
+
+        <record id="company_loc_zambia" model="res.company">
+            <field name="name">Zambia</field>
+            <field name="country_id" ref="base.zm"/>
+            <field name="currency_id" ref="base.ZMW"/>
+            <field name="keycloak_loc_identifier">loc_zambia</field>
+        </record>
+
+        <record id="company_loc_ethiopia" model="res.company">
+            <field name="name">Ethiopia</field>
+            <field name="country_id" ref="base.et"/>
+            <field name="currency_id" ref="base.ETB"/>
+            <field name="keycloak_loc_identifier">loc_ethiopia</field>
+        </record>
+
+        <record id="company_loc_malawi" model="res.company">
+            <field name="name">Malawi</field>
+            <field name="country_id" ref="base.mw"/>
+            <field name="currency_id" ref="base.MWK"/>
+            <field name="keycloak_loc_identifier">loc_malawi</field>
+        </record>
+
+        <record id="company_loc_burundi" model="res.company">
+            <field name="name">Burundi</field>
+            <field name="country_id" ref="base.bi"/>
+            <field name="currency_id" ref="base.BIF"/>
+            <field name="keycloak_loc_identifier">loc_burundi</field>
+        </record>
+    </data>
+</odoo>
